@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Posts;
 
+use App\Http\Controllers\AppController;
 use App\Models\Category;
 use App\Models\Post;
 use App\Repositories\PostsRepository;

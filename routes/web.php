@@ -14,23 +14,25 @@
 //Route::get('/', function () {
 //    return view('welcome');
 //});
+Route::permanentRedirect('/', '/posts');
 
-Route::get('/', 'PostsController@index');
+Route::namespace('Posts')->prefix('posts')->group(function () {
+    Route::get('', 'PostsController@index');
+    Route::post('store', 'PostsController@store');
+    Route::get('create', 'PostsController@create');
+    Route::get('/{id}', 'PostsController@show');
+    Route::get('/{id}/edit', 'PostsController@edit');
+    Route::put('/{id}', 'PostsController@update');
+    Route::get('/{id}/delete', 'PostsController@destroy');
+});
 
-//Route::resource('posts', 'PostsController');
 
-Route::get('posts', 'PostsController@index');
-Route::post('posts/store', 'PostsController@store');
-Route::get('posts/create', 'PostsController@create');
-Route::get('posts/{id}', 'PostsController@show');
-Route::get('posts/{id}/edit', 'PostsController@edit');
-Route::put('posts/{id}', 'PostsController@update');
-Route::get('posts/{id}/delete', 'PostsController@destroy');
-
-Route::get('categories', 'CategoriesController@index');
-Route::post('categories/store', 'CategoriesController@store');
-Route::get('categories/create', 'CategoriesController@create');
-Route::get('categories/{id}', 'CategoriesController@show');
-Route::get('categories/{id}/edit', 'CategoriesController@edit');
-Route::put('categories/{id}', 'CategoriesController@update');
-Route::get('categories/{id}/delete', 'CategoriesController@destroy');
+Route::namespace('Categories')->prefix('categories')->group(function () {
+    Route::get('', 'CategoriesController@index');
+    Route::post('store', 'CategoriesController@store');
+    Route::get('create', 'CategoriesController@create');
+    Route::get('/{id}', 'CategoriesController@show');
+    Route::get('/{id}/edit', 'CategoriesController@edit');
+    Route::put('/{id}', 'CategoriesController@update');
+    Route::get('/{id}/delete', 'CategoriesController@destroy');
+});
