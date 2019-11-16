@@ -31,10 +31,7 @@ class CategoriesController extends AppController
 
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'title' => 'required|string|min:3',
-            'slug' => 'required|string|min:3'
-        ]);
+        $this->validateCategory($request);
         $response = $this->repository->store($request->input());
         if($response['status'] == true) {
             return redirect('/categories')->with('success', 'Category Created');
@@ -56,29 +53,43 @@ class CategoriesController extends AppController
         return view('categories.edit')->with('category', $category);
     }
 
-    public function update(Request $request, $id)
+    public function delete($id)
     {
-        $this->validate($request, [
-            'title' => 'required|string|min:3',
-            'slug' => 'required|string|min:3'
-        ]);
-        $response = $this->repository->update($request->input(), $id);
+        $category = $this->repository->show($id);
+        return view('categories.delete')->with('category', $category);
+    }
+
+    public function update(Request $request)
+    {
+        $this->validateCategory($request);
+        $response = $this->repository->update($request->input());
         if($response['status'] == true) {
             return redirect('/categories')->with('success', 'Category Updated');
         } else {
-            return redirect('/categories/'.$id.'/edit')->with('error', 'Category not updated');
+            return redirect('/categories/'.$request['id'].'/edit')->with('error', 'Category not updated');
         }
     }
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $result = $this->repository->delete($id);
+        $this->validate($request, [
+            'id' => 'required|integer|exists:categories,id'
+        ]);
+        $result = $this->repository->delete($request['id']);
         if($result == true) {
             return redirect('/categories')->with('success', 'Category Removed');
         } else {
             return redirect('/categories')->with('error', 'Category not removed');
         }
 
+    }
+
+    private function validateCategory(Request $request)
+    {
+        return $this->validate($request, [
+            'title' => 'required|string|min:3',
+            'slug' => 'required|string|min:3'
+        ]);
     }
 
 }

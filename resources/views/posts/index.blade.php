@@ -32,7 +32,7 @@
                     <td>{{$post['created_at']}}</td>
                     <td>{{$post['updated_at']}}</td>
                     <td><a href="/posts/{{$post->id}}/edit" class="btn btn-info">Edit</a></td>
-                    <td><a href="/posts/{{$post->id}}/delete" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a></td>
+                    <td><a href="/posts/{{$post->id}}/delete" class="btn btn-danger">Delete</a></td>
                 </tr>
             @endforeach
         </table>

@@ -22,7 +22,7 @@
                     <td>{{$category['created_at']}}</td>
                     <td>{{$category['updated_at']}}</td>
                     <td><a href="/categories/{{$category->id}}/edit" class="btn btn-info">Edit</a></td>
-                    <td><a href="/categories/{{$category->id}}/delete" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a></td>
+                    <td><a href="/categories/{{$category->id}}/delete"class="btn btn-danger" >Delete</a></td>
                 </tr>
             @endforeach
         </table>

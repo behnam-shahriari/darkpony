@@ -43,13 +43,13 @@ class CategoriesRepository extends GeneralRepository
         }
     }
 
-    public function update(array $cat, int $id)
+    public function update(array $cat)
     {
         $response = [
             'status' => false
         ];
         try {
-            $category = Category::find($id);
+            $category = Category::find($cat['id']);
             $category->title = $cat['title'];
             $category->slug = $cat['slug'];
             $category->save();
@@ -64,12 +64,10 @@ class CategoriesRepository extends GeneralRepository
     {
         try {
             $deleted = Category::destroy($id);
-
-            return $deleted;
+            $response['status'] = $deleted;
         } catch (QueryException $exception) {
             $this->handleException($exception, "", 1);
-
-            return false;
         }
+        return $response;
     }
 }

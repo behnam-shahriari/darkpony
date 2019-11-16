@@ -56,4 +56,14 @@ class PostsRepository extends GeneralRepository
         }
     }
 
+    public function delete(int $id)
+    {
+        try {
+            $deleted = Post::destroy($id);
+            $response['status'] = $deleted;
+        } catch (QueryException $exception) {
+            $this->handleException($exception, "", 1);
+        }
+        return $response;
+    }
 }

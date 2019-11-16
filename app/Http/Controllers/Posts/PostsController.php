@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Posts;
 
 use App\Http\Controllers\AppController;
-use App\Models\Category;
-use App\Models\Post;
+use App\Repositories\CategoriesRepository;
 use App\Repositories\PostsRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -16,11 +15,16 @@ class PostsController extends AppController
      * @var PostsRepository
      */
     private $repository;
+    /**
+     * @var CategoriesRepository
+     */
+    private $categoriesRepository;
 
-    public function __construct(PostsRepository $repository)
+    public function __construct(PostsRepository $repository, CategoriesRepository $categoriesRepository)
     {
 
         $this->repository = $repository;
+        $this->categoriesRepository = $categoriesRepository;
     }
 
     /**
@@ -30,7 +34,6 @@ class PostsController extends AppController
      */
     public function index()
     {
-//        $posts = Post::paginate(10);
         $posts = $this->repository->index();
         return view('posts.index')->with('posts', $posts);
     }
@@ -55,15 +58,7 @@ class PostsController extends AppController
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'title' => 'required|string|min:3',
-            'slug' => 'required|string|min:3',
-            'subtitle' => 'required|string|min:3',
-            'content' => 'required|string|min:3',
-            'published_at' => 'required|date',
-            'image' => 'image|nullable|max:1999',
-            'category' => 'required|integer',
-        ]);
+        $this->validatePost($request);
 
         if ($request->hasFile('image')) {
             $fileNameWithExt = $request->file('image')->getClientOriginalName();
@@ -107,8 +102,8 @@ class PostsController extends AppController
      */
     public function edit($id)
     {
-        $post = Post::find($id);
-        $categories = Category::all();
+        $post = $this->repository->show($id);
+        $categories = $this->categoriesRepository->index();
         return view('posts.edit', compact('post', $post, 'categories', $categories ));
     }
 
@@ -121,15 +116,7 @@ class PostsController extends AppController
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'title' => 'required|string|min:3',
-            'slug' => 'required|string|min:3',
-            'subtitle' => 'required|string|min:3',
-            'content' => 'required|string|min:3',
-            'published_at' => 'required|date',
-            'image' => 'image|nullable|max:1999',
-            'category' => 'required|integer',
-        ]);
+        $this->validatePost($request);
 
         if ($request->hasFile('image')) {
             $fileNameWithExt = $request->file('image')->getClientOriginalName();
@@ -143,7 +130,7 @@ class PostsController extends AppController
 
         }
 
-        $post = Post::find($id);
+        $post = $this->repository->show($id);
         $post->title = $request->input('title');
         $post->slug = $request->input('slug');
         $post->subtitle = $request->input('subtitle');
@@ -165,15 +152,46 @@ class PostsController extends AppController
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $post = Post::find($id);
-
-        if ($post->image != 'noimage.jpg') {
-            Storage::delete('public/images/' . $post->image);
+        $this->validate($request, [
+            'id' => 'required|integer|exists:posts,id'
+        ]);
+        $result = $this->repository->delete($request['id']);
+        if($result == true) {
+            return redirect('/posts')->with('success', 'Post Removed');
+        } else {
+            return redirect('/posts')->with('error', 'Post not removed');
         }
 
-        $post->delete();
-        return redirect('/posts')->with('success', 'Post Removed');
+
+
+//
+//        $post = $this->repository->show($id);
+//        if ($post->image != 'noimage.jpg') {
+//            Storage::delete('public/images/' . $post->image);
+//        }
+//
+//        $post->delete();
+//        return redirect('/posts')->with('success', 'Post Removed');
+    }
+
+    public function delete($id)
+    {
+        $post = $this->repository->show($id);
+        return view('posts.delete')->with('post', $post);
+    }
+
+    private function validatePost(Request $request)
+    {
+        return $this->validate($request, [
+            'title' => 'required|string|min:3',
+            'slug' => 'required|string|min:3',
+            'subtitle' => 'required|string|min:3',
+            'content' => 'required|string|min:3',
+            'published_at' => 'required|date',
+            'image' => 'image|nullable|max:1999',
+            'category' => 'required|integer',
+        ]);
     }
 }

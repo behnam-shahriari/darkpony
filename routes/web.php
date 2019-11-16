@@ -23,7 +23,8 @@ Route::namespace('Posts')->prefix('posts')->group(function () {
     Route::get('/{id}', 'PostsController@show');
     Route::get('/{id}/edit', 'PostsController@edit');
     Route::put('/{id}', 'PostsController@update');
-    Route::get('/{id}/delete', 'PostsController@destroy');
+    Route::delete('/{id}', 'PostsController@destroy');
+    Route::get('/{id}/delete', 'PostsController@delete');
 });
 
 
@@ -34,5 +35,6 @@ Route::namespace('Categories')->prefix('categories')->group(function () {
     Route::get('/{id}', 'CategoriesController@show');
     Route::get('/{id}/edit', 'CategoriesController@edit');
     Route::put('/{id}', 'CategoriesController@update');
-    Route::get('/{id}/delete', 'CategoriesController@destroy');
+    Route::delete('/{id}', 'CategoriesController@destroy');
+    Route::get('/{id}/delete', 'CategoriesController@delete');
 });
